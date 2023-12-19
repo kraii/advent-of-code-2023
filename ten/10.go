@@ -61,7 +61,7 @@ func traverse(g grid) []point {
 
 	prev := start
 	current := findValidMoveFromStart(g, start)
-	for !current.eq(start) {
+	for current != start {
 		next := chooseNext(g, prev, current)
 		prev, current = current, next
 		visited = append(visited, current)
@@ -71,7 +71,7 @@ func traverse(g grid) []point {
 
 func findValidMoveFromStart(g grid, start point) point {
 	for i := 1; i < 5; i++ {
-		location := start.move(direction(i))
+		location := move(start, direction(i))
 		if !g.inBounds(location) {
 			continue
 		}
@@ -79,8 +79,8 @@ func findValidMoveFromStart(g grid, start point) point {
 		if !validMove {
 			continue
 		}
-		for _, move := range moves {
-			if location.move(move).eq(start) {
+		for _, m := range moves {
+			if move(location, m) == start {
 				return location
 			}
 		}
@@ -88,9 +88,9 @@ func findValidMoveFromStart(g grid, start point) point {
 	panic("I can't find anywhere to start :(")
 }
 
-func (p point) eq(other point) bool {
-	return p.x == other.x && p.y == other.y
-}
+//func (p point) eq(other point) bool {
+//	return p.x == other.x && p.y == other.y
+//}
 
 func (g grid) value(p point) rune {
 	return g[p.y][p.x]
@@ -101,7 +101,7 @@ func (g grid) inBounds(p point) bool {
 	return p.x > 0 && p.x < maxX && p.y >= 0 && p.y < maxY
 }
 
-func (p point) move(d direction) point {
+func move(p point, d direction) point {
 	switch d {
 	case up:
 		return point{p.x, p.y - 1}
@@ -137,8 +137,8 @@ func chooseNext(g grid, prev point, current point) point {
 	value := g.value(current)
 	possibleMoves := pipeTypes[value]
 	for _, dir := range possibleMoves {
-		move := current.move(dir)
-		if !move.eq(prev) {
+		move := move(current, dir)
+		if move != prev {
 			return move
 		}
 	}

@@ -6,9 +6,9 @@ import (
 )
 
 func TestCheckPoint(t *testing.T) {
-	assert.Equal(t, true, point{1, 2}.eq(point{1, 2}))
-	assert.Equal(t, false, point{3, 4}.eq(point{3, 7}))
-	assert.Equal(t, false, point{5, 4}.eq(point{3, 4}))
+	assert.Equal(t, true, point{1, 2} == (point{1, 2}))
+	assert.Equal(t, false, point{3, 4} == (point{3, 7}))
+	assert.Equal(t, false, point{5, 4} == (point{3, 4}))
 }
 
 func TestFindStart(t *testing.T) {
