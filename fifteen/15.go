@@ -27,24 +27,24 @@ func sumHashSequence(s string) int {
 
 func initializeLenses(s string) int {
 	entries := strings.Split(strings.TrimSpace(s), ",")
-	boxes := buildEmptyBoxes()
+	boxes := make([][]lens, 256)
 	for _, entry := range entries {
 		if strings.Contains(entry, "=") {
 			parts := strings.Split(entry, "=")
-			key, value := parts[0], toInt(parts[1])
-			i := hash(key)
+			label, length := parts[0], toInt(parts[1])
+			i := hash(label)
 			box := boxes[i]
-			existingLoc := slices.IndexFunc(box, matchingLabel(key))
+			existingLoc := slices.IndexFunc(box, matchingLabel(label))
 			if existingLoc == -1 {
-				boxes[i] = append(box, lens{key, value})
+				boxes[i] = append(box, lens{label, length})
 			} else {
-				box[existingLoc] = lens{key, value}
+				box[existingLoc] = lens{label, length}
 			}
 		} else {
 			parts := strings.Split(entry, "-")
-			key := parts[0]
-			i := hash(key)
-			boxes[i] = slices.DeleteFunc(boxes[i], matchingLabel(key))
+			label := parts[0]
+			i := hash(label)
+			boxes[i] = slices.DeleteFunc(boxes[i], matchingLabel(label))
 		}
 	}
 
@@ -66,14 +66,6 @@ func matchingLabel(label string) func(a lens) bool {
 type lens struct {
 	label       string
 	focalLength int
-}
-
-func buildEmptyBoxes() [][]lens {
-	boxes := make([][]lens, 256)
-	for i := range boxes {
-		boxes[i] = make([]lens, 0, 10)
-	}
-	return boxes
 }
 
 func toInt(x string) int {
