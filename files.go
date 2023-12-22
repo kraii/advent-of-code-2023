@@ -19,3 +19,12 @@ func OpenScanner(file string) *bufio.Scanner {
 	}
 	return bufio.NewScanner(bufio.NewReader(f))
 }
+
+func FileAsString(file string) string {
+	scanner := OpenScanner(file)
+	result := ""
+	for scanner.Scan() {
+		result = result + scanner.Text() + "\n"
+	}
+	return result
+}
