@@ -71,11 +71,11 @@ func possibleMoves(prev move) []move {
 	left := TurnLeft(prev.dir)
 	right := TurnRight(prev.dir)
 	moves := []move{
-		{pos: Move(prev.pos, left), dir: left, count: 1},
-		{pos: Move(prev.pos, right), dir: right, count: 1},
+		{pos: Move1(prev.pos, left), dir: left, count: 1},
+		{pos: Move1(prev.pos, right), dir: right, count: 1},
 	}
 	if prev.count < 3 {
-		moves = append(moves, move{pos: Move(prev.pos, prev.dir), dir: prev.dir, count: prev.count + 1})
+		moves = append(moves, move{pos: Move1(prev.pos, prev.dir), dir: prev.dir, count: prev.count + 1})
 	}
 
 	return moves
@@ -87,12 +87,12 @@ func possibleMovesUltra(prev move) []move {
 	var moves []move
 	if prev.count == 0 || prev.count >= 4 {
 		moves = append(moves,
-			move{pos: Move(prev.pos, left), dir: left, count: 1},
-			move{pos: Move(prev.pos, right), dir: right, count: 1},
+			move{pos: Move1(prev.pos, left), dir: left, count: 1},
+			move{pos: Move1(prev.pos, right), dir: right, count: 1},
 		)
 	}
 	if prev.count < 10 {
-		moves = append(moves, move{pos: Move(prev.pos, prev.dir), dir: prev.dir, count: prev.count + 1})
+		moves = append(moves, move{pos: Move1(prev.pos, prev.dir), dir: prev.dir, count: prev.count + 1})
 	}
 
 	return moves

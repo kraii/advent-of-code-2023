@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 	"runtime"
+	"strconv"
 )
 
 func GetFilePath(name string) string {
@@ -27,4 +28,12 @@ func FileAsString(file string) string {
 		result = result + scanner.Text() + "\n"
 	}
 	return result
+}
+
+func ToInt(v string) int {
+	atoi, err := strconv.Atoi(v)
+	if err != nil {
+		panic(err)
+	}
+	return atoi
 }

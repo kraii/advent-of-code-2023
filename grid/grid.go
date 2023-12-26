@@ -15,16 +15,35 @@ const (
 	Left  Direction = 3
 )
 
-func Move(p Point, d Direction) Point {
+func PrintDir(dir Direction) string {
+	switch dir {
+	case Up:
+		return "Up"
+	case Down:
+		return "Down"
+	case Left:
+		return "Left"
+	case Right:
+		return "Right"
+	default:
+		panic(badDirection(dir))
+	}
+}
+
+func Move1(p Point, d Direction) Point {
+	return Move(p, d, 1)
+}
+
+func Move(p Point, d Direction, distance int) Point {
 	switch d {
 	case Up:
-		return Point{p.X, p.Y - 1}
+		return Point{p.X, p.Y - distance}
 	case Down:
-		return Point{p.X, p.Y + 1}
+		return Point{p.X, p.Y + distance}
 	case Left:
-		return Point{p.X - 1, p.Y}
+		return Point{p.X - distance, p.Y}
 	case Right:
-		return Point{p.X + 1, p.Y}
+		return Point{p.X + distance, p.Y}
 	}
 	panic(badDirection(d))
 }
