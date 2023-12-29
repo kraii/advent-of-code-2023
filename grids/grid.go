@@ -1,6 +1,9 @@
-package grid
+package grids
 
-import "fmt"
+import (
+	"aoc"
+	"fmt"
+)
 
 type Point struct {
 	X, Y int
@@ -14,6 +17,8 @@ const (
 	Down  Direction = 2
 	Left  Direction = 3
 )
+
+var Directions = [4]Direction{Up, Right, Down, Left}
 
 func PrintDir(dir Direction) string {
 	switch dir {
@@ -84,4 +89,24 @@ func TurnRight(current Direction) Direction {
 
 func InRange[T any](grid [][]T, p Point) bool {
 	return p.X >= 0 && p.Y >= 0 && p.Y < len(grid) && p.X < len(grid[0])
+}
+
+func ParseGrid(file string) [][]rune {
+	var result [][]rune
+	scanner := aoc.OpenScanner(file)
+	for scanner.Scan() {
+		result = append(result, []rune(scanner.Text()))
+	}
+	return result
+}
+
+func FindPoint[T comparable](grid [][]T, value T) Point {
+	for y, row := range grid {
+		for x, v := range row {
+			if v == value {
+				return Point{x, y}
+			}
+		}
+	}
+	return Point{-1, -1}
 }

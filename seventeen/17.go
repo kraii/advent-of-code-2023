@@ -2,7 +2,7 @@ package seventeen
 
 import (
 	. "aoc"
-	. "aoc/grid"
+	. "aoc/grids"
 	"strconv"
 )
 

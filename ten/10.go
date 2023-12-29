@@ -1,7 +1,7 @@
 package ten
 
 import (
-	"aoc"
+	grid2 "aoc/grids"
 	"fmt"
 )
 
@@ -12,14 +12,14 @@ type point struct {
 }
 
 func solvePart1(file string) int {
-	g := parse(file)
+	g := grid2.ParseGrid(file)
 	route := traverse(g)
 	fmt.Printf("Route %+v\n", route)
 	return len(route) / 2
 }
 
 func solvePart2(file string) int {
-	g := parse(file)
+	g := grid2.ParseGrid(file)
 	route := traverse(g)
 	area := calculateShoelace(route)
 	// https://en.wikipedia.org/wiki/Pick%27s_theorem
@@ -44,15 +44,6 @@ func abs(x int) int {
 		return -x
 	}
 	return x
-}
-
-func parse(file string) grid {
-	var result [][]rune
-	scanner := aoc.OpenScanner(file)
-	for scanner.Scan() {
-		result = append(result, []rune(scanner.Text()))
-	}
-	return result
 }
 
 func traverse(g grid) []point {

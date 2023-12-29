@@ -2,7 +2,7 @@ package eighteen
 
 import (
 	. "aoc"
-	. "aoc/grid"
+	. "aoc/grids"
 	"fmt"
 	"strconv"
 	"strings"

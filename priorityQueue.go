@@ -6,6 +6,15 @@ type Queueable interface {
 	Priority() int
 }
 
+type Item[T any] struct {
+	contents T
+	priority int
+}
+
+func (i Item[T]) Priority() int {
+	return i.priority
+}
+
 type PriorityQueue[T Queueable] []T
 
 func (pq *PriorityQueue[T]) Len() int { return len(*pq) }
@@ -42,4 +51,18 @@ func (pq *PriorityQueue[T]) PopHeap() T {
 
 func (pq *PriorityQueue[T]) PushHeap(v T) {
 	heap.Push(pq, v)
+}
+
+func PushItem[T any](pq *PriorityQueue[Item[T]], item T, priority int) {
+	pq.PushHeap(Item[T]{contents: item, priority: priority})
+}
+
+func PopItem[T any](pq *PriorityQueue[Item[T]]) T {
+	return pq.PopHeap().contents
+}
+
+func MakeQueue[T any](capacity int) *PriorityQueue[Item[T]] {
+	pq := make(PriorityQueue[Item[T]], 0, capacity)
+	pq.Init()
+	return &pq
 }
