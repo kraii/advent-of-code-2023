@@ -2,6 +2,7 @@ package eight
 
 import (
 	"aoc"
+	"aoc/maths"
 	"fmt"
 	"strings"
 )
@@ -69,27 +70,7 @@ func solvePart2(file string) int {
 	}
 
 	fmt.Printf("%+v\n", pathLengths)
-	return lcmAll(pathLengths)
-}
-
-func lcmAll(nums []int) int {
-	result := 1
-	for _, n := range nums {
-		result = lcm(result, n)
-	}
-	return result
-}
-
-func lcm(a int, b int) int {
-	return (a * b) / gcd(a, b)
-}
-
-func gcd(a int, b int) int {
-	if b == 0 {
-		return a
-	} else {
-		return gcd(b, a%b)
-	}
+	return maths.LcmAll(pathLengths)
 }
 
 func stillTravelling(paths []int) bool {
@@ -113,7 +94,7 @@ func chooseNext(direction rune, node mapNode) string {
 
 func nodesEndingWithA(nodes map[string]mapNode) []string {
 	var result []string
-	for k, _ := range nodes {
+	for k := range nodes {
 		if strings.HasSuffix(k, "A") {
 			result = append(result, k)
 		}

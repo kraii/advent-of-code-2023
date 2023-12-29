@@ -21,3 +21,7 @@ func TestSolvePart1(t *testing.T) {
 func TestSolvePart2(t *testing.T) {
 	println(findRxLowSend("twenty/input.txt"))
 }
+
+func TestGraphviz(t *testing.T) {
+	createGraphImage()
+}

@@ -2,6 +2,12 @@ package twenty
 
 import (
 	"aoc"
+	"aoc/maths"
+	"fmt"
+	"github.com/goccy/go-graphviz"
+	"github.com/goccy/go-graphviz/cgraph"
+	"log"
+	"strconv"
 	"strings"
 )
 
@@ -91,15 +97,6 @@ func (b *broadcaster) receive(_ *circuit, _ string, s signal) signal {
 	return s
 }
 
-func send(c *circuit, from string, s signal, f module) []emission {
-	var result []emission
-	for _, conn := range f.outConnections() {
-		nextSignal := c.modules[conn].receive(c, from, s)
-		result = append(result, emission{source: conn, sig: nextSignal})
-	}
-	return result
-}
-
 func calcPulses(file string, presses int) int {
 	cir := parse(file)
 	c := &cir
@@ -137,45 +134,98 @@ func calcPulses(file string, presses int) int {
 	return totalLow * totalHigh
 }
 
+// I made a visualization but was still stumped, ended up stealing idea from this reddit post:
+// https://www.reddit.com/r/adventofcode/comments/18mmfxb/comment/ke5sgxs/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
 func findRxLowSend(file string) int {
 	cir := parse(file)
 	c := &cir
 
-	totalHigh, totalLow := 0, 0
-	found := false
-	for !found {
-		//println("--------press---------")
-		emissions := []emission{{source: "broadcaster", sig: lowPulse}}
-		totalLow++
-		for len(emissions) > 0 {
-			current := emissions[0]
-			emissions = emissions[1:]
-			currentModule := c.modules[current.source]
-			for _, con := range currentModule.outConnections() {
-				if current.sig == lowPulse {
-					//println(current.source, "low->", con)
-					totalLow++
-					if con == "rx" {
-						found = true
-					}
-				}
-				if current.sig == highPulse {
-					//println(current.source, "high->", con)
-					totalHigh++
-				}
-				connectedModule, p := c.modules[con]
-				if !p {
-					continue
-				}
-				newSig := connectedModule.receive(c, current.source, current.sig)
-				if newSig != nothing {
-					emissions = append(emissions, emission{source: con, sig: newSig})
-				}
+	var results []int
 
+	for _, topLevelConnection := range c.modules["broadcaster"].outConnections() {
+		binaryS := ""
+		toVisit := []string{topLevelConnection}
+
+		for len(toVisit) > 0 {
+			current := toVisit[0]
+			toVisit = toVisit[1:]
+
+			mod := c.modules[current]
+			switch mod.(type) {
+			case *flipFlop:
+				if connectedToConjunction(c, mod.outConnections()) {
+					binaryS = "1" + binaryS
+				} else {
+					binaryS = "0" + binaryS
+				}
+			default:
+				binaryS = "0" + binaryS
+			}
+
+			for _, cName := range mod.outConnections() {
+				conn := c.modules[cName]
+				switch conn.(type) {
+				case *flipFlop:
+					toVisit = append(toVisit, cName)
+				}
 			}
 		}
+		i, err := strconv.ParseInt(binaryS, 2, 32)
+		if err != nil {
+			panic(err)
+		}
+		results = append(results, int(i))
 	}
-	return totalLow * totalHigh
+	return maths.LcmAll(results)
+}
+
+func connectedToConjunction(c *circuit, connections []string) bool {
+	for _, connection := range connections {
+		switch c.modules[connection].(type) {
+		case *conjunction:
+			return true
+		}
+	}
+	return false
+}
+
+func createGraphImage() {
+	c := parse("twenty/input.txt")
+	g := graphviz.New()
+	graph, err := g.Graph(graphviz.Directed)
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		if err := graph.Close(); err != nil {
+			log.Fatal(err)
+		}
+		_ = g.Close()
+	}()
+
+	for name, mod := range c.modules {
+		n := newNode(graph, name)
+		for _, conn := range mod.outConnections() {
+			cNode := newNode(graph, conn)
+			_, err := graph.CreateEdge(fmt.Sprintf("%s-%s", name, conn), n, cNode)
+			if err != nil {
+				return
+			}
+		}
+
+	}
+	if err := g.RenderFilename(graph, graphviz.PNG, "graph.png"); err != nil {
+		panic(err)
+	}
+
+}
+
+func newNode(graph *cgraph.Graph, name string) *cgraph.Node {
+	node, err := graph.CreateNode(name)
+	if err != nil {
+		panic(err)
+	}
+	return node
 }
 
 func parse(file string) circuit {
