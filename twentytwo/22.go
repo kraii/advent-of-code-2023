@@ -134,16 +134,19 @@ func solvePart2(file string) int {
 	fall(bricks)
 
 	result := 0
+	supportMap := mapSupportedBy(bricks)
 
 	for _, toRemove := range bricks {
 		willChain := make(Set[string])
 		for _, other := range bricks {
 			_, seen := willChain[other.label]
-			if toRemove == other || seen {
+			if toRemove == other || seen || lowest(other) == 0 {
 				continue
 			}
 
-			if willFall(toRemove, other, bricks, willChain) {
+			supporting := supportMap[other.label]
+
+			if willFall(toRemove, supporting, willChain) {
 				willChain.Add(other.label)
 			}
 		}
@@ -152,22 +155,15 @@ func solvePart2(file string) int {
 	return result
 }
 
-func willFall(remove *brick, other *brick, bricks []*brick, allReadyFalling Set[string]) bool {
-	if lowest(other) == 0 {
-		return false
+func willFall(remove *brick, supporting []string, allReadyFalling Set[string]) bool {
+	supportsRemoved := 0
+	for _, s := range supporting {
+		if s == remove.label || allReadyFalling.Contains(s) {
+			supportsRemoved++
+		}
 	}
 
-	for _, b := range bricks {
-		if b == remove || b == other {
-			continue
-		}
-		_, inChain := allReadyFalling[b.label]
-		b2 := supports(b, other)
-		if b2 && !inChain {
-			return false
-		}
-	}
-	return true
+	return len(supporting)-supportsRemoved == 0
 }
 
 func mapSupportedBy(bricks []*brick) map[string][]string {
