@@ -6,6 +6,7 @@ import (
 	"testing"
 )
 
+const inputFile = "twentytwo/input.txt"
 const example1 = "twentytwo/22-e.txt"
 const example2 = "twentytwo/22-e2.txt"
 
@@ -86,5 +87,13 @@ func TestSolvePart1Example2(t *testing.T) {
 }
 
 func TestSolvePart1(t *testing.T) {
-	println(solvePart1("twentytwo/input.txt"))
+	println(solvePart1(inputFile))
+}
+
+func TestSolvePart2Example(t *testing.T) {
+	assert.Equal(t, 7, solvePart2(example1))
+}
+
+func TestSolvePart2(t *testing.T) {
+	println(solvePart2(inputFile)) // 109531
 }

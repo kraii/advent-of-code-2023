@@ -129,6 +129,47 @@ func solvePart1(file string) int {
 	return result
 }
 
+func solvePart2(file string) int {
+	bricks := parse(file)
+	fall(bricks)
+
+	result := 0
+
+	for _, toRemove := range bricks {
+		willChain := make(Set[string])
+		for _, other := range bricks {
+			_, seen := willChain[other.label]
+			if toRemove == other || seen {
+				continue
+			}
+
+			if willFall(toRemove, other, bricks, willChain) {
+				willChain.Add(other.label)
+			}
+		}
+		result += len(willChain)
+	}
+	return result
+}
+
+func willFall(remove *brick, other *brick, bricks []*brick, allReadyFalling Set[string]) bool {
+	if lowest(other) == 0 {
+		return false
+	}
+
+	for _, b := range bricks {
+		if b == remove || b == other {
+			continue
+		}
+		_, inChain := allReadyFalling[b.label]
+		b2 := supports(b, other)
+		if b2 && !inChain {
+			return false
+		}
+	}
+	return true
+}
+
 func mapSupportedBy(bricks []*brick) map[string][]string {
 	result := make(map[string][]string)
 
@@ -152,17 +193,10 @@ func toBrickId(i int) string {
 	return string(rune(i + 97))
 }
 
-func supports(b *brick, other *brick) bool {
-	return lowest(other) == highest(b)+1 && intersects(b, other)
+func supports(support *brick, supported *brick) bool {
+	return lowest(supported) == highest(support)+1 && intersects(support, supported)
 }
 
 func supportedBy(b *brick, other *brick) bool {
 	return lowest(b) == highest(other)+1 && intersects(b, other)
 }
-
-/*
-
-A . .
-A . .
-. . .
-*/
