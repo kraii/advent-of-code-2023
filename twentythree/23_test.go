@@ -9,7 +9,7 @@ const example = "twentythree/ex.txt"
 const input = "twentythree/input.txt"
 
 func TestExample1(t *testing.T) {
-	assert.Equal(t, 94, solve(example))
+	assert.Equal(t, 94, solvePart1(example))
 }
 
 func TestFindStart(t *testing.T) {
@@ -17,5 +17,13 @@ func TestFindStart(t *testing.T) {
 }
 
 func TestSolvePart1(t *testing.T) {
-	println(solve(input))
+	println(solvePart1(input))
+}
+
+func TestExample1Part2(t *testing.T) {
+	assert.Equal(t, 154, solvePart2(example))
+}
+
+func TestSolvePart2(t *testing.T) {
+	println(solvePart2(input))
 }
