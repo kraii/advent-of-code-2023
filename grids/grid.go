@@ -110,3 +110,12 @@ func FindPoint[T comparable](grid [][]T, value T) Point {
 	}
 	return Point{-1, -1}
 }
+
+func Make2DSlice[T any](lenX, lenY int) [][]T {
+	outer := make([][]T, lenY)
+	contents := make([]T, lenY*lenX)
+	for i := range outer {
+		outer[i], contents = contents[:lenX], contents[lenX:]
+	}
+	return outer
+}

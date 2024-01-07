@@ -1,7 +1,6 @@
 package twentythree
 
 import (
-	"aoc"
 	. "aoc/grids"
 )
 
@@ -11,21 +10,21 @@ func solve(file string) int {
 	start := Point{X: findStartOrEnd(grid[0]), Y: 0}
 	end := Point{X: findStartOrEnd(grid[len(grid)-1]), Y: len(grid) - 1}
 
-	return search(grid, start, end, 0, make(aoc.Set[Point]))
+	return search(grid, start, end, 0, Make2DSlice[bool](len(grid[0]), len(grid)))
 }
 
-func search(grid [][]rune, cur Point, end Point, distance int, visited aoc.Set[Point]) int {
+func search(grid [][]rune, cur Point, end Point, distance int, visited [][]bool) int {
 	if cur == end {
 		return distance
 	}
-	visited.Add(cur)
+	visited[cur.Y][cur.X] = true
 	maxDist := 0
 	for _, point := range findAvailableMoves(grid, cur) {
-		if !visited.Contains(point) {
+		if !visited[point.Y][point.X] {
 			maxDist = max(maxDist, search(grid, point, end, distance+1, visited))
 		}
 	}
-	delete(visited, cur)
+	visited[cur.Y][cur.X] = false
 	return maxDist
 }
 
